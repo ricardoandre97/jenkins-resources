@@ -1,0 +1,43 @@
+
+job('job_dsl_example') {
+
+    description('This is my awesome Job')
+
+  
+    parameters {
+        stringParam('Planet', defaultValue = 'world', description = 'This is the world')
+	booleanParam('FLAG', true)
+        choiceParam('OPTION', ['option 1 (default)', 'option 2', 'option 3'])
+    }
+
+    scm {
+        git('https://github.com/jenkins-docs/simple-java-maven-app', 'master')
+    }
+
+    triggers {
+        cron('H 5 * * 7')
+    }
+
+    steps {
+
+        wrappers {
+            colorizeOutput(colorMap = 'xterm')
+      }
+        ansiblePlaybook('/etc/ansible/plays/i2b-cl/some_playbook.yml') {
+            inventoryPath('/etc/ansible/plays/i2b-cl/hosts')
+            tags('cool')
+            forks(1)
+            colorizedOutput(true)
+            additionalParameters('--vault-password-file $HOME/pass-vault/i2b-cl.txt')
+            extraVars {
+                extraVar("whoami", '${param1}', false)
+                extraVar("my_pass", 'some_pass', true)
+            }
+        }
+    }
+
+    publishers {
+        mailer('me@example.com', true, true)
+    }
+}
+

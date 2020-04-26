@@ -1,0 +1,7 @@
+version: '3'
+services:
+  app:
+    image: "maven-project:$BUILD_TAG"
+    build:
+      context: .
+      dockerfile: Dockerfile-Java
