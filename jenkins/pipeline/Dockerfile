@@ -1,5 +1,5 @@
 FROM jenkins/jenkins
-
+MAINTAINER MOULI
 USER root
 
 # Install ansible
