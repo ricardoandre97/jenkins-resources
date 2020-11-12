@@ -1,5 +1,5 @@
 FROM jenkins/jenkins
-MAINTAINER MOULI
+MAINTAINER MOULI KURIMETI
 USER root
 
 # Install ansible
