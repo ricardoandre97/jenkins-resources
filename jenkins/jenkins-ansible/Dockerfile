@@ -1,7 +1,7 @@
-FROM jenkins/jenkins                                  # Doesn't change
-USER root                                             # Doesn't change
+FROM jenkins/jenkins
+USER root
 
-RUN apt-get update && apt-get install python3-pip -y  # Doesn't change
+RUN apt-get update && apt-get install python3-pip -y
 
 # New lines to set up a virtual environment
 ####
