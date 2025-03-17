@@ -1,4 +1,4 @@
-FROM centos:7
+FROM fedora:41
 
 RUN yum -y install openssh-server
 
