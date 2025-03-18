@@ -32,7 +32,7 @@
   if ($conn->connect_error) {
    die("Connection failed: " . $conn->connect_error);
   }
-  $sql = "SELECT id, name, lastname, age FROM register {% if PEOPLE_AGE is defined %} where age = {{ PEOPLE_AGE }} {% endif %}";
+  $sql = "SELECT id, name, lastname, age FROM register where age = 20";
   $result = $conn->query($sql);
   if ($result->num_rows > 0) {
    // output data of each row
