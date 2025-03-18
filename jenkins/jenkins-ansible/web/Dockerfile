@@ -1,6 +1,6 @@
 FROM remote-host
 
-RUN yum -y install nginx-1.26.3 php-fpm-8.3.17
+RUN yum -y install nginx-1.26.3 php-fpm-8.3.17 php-mysqlnd-8.3.17
 
 EXPOSE 80 443
 
