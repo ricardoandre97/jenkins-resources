@@ -1,33 +1,44 @@
 FROM jenkins/jenkins
-
 USER root
 
-# Install ansible
-RUN curl "https://bootstrap.pypa.io/get-pip.py" -o "get-pip.py" && python get-pip.py
+RUN apt-get update && apt-get install python3-pip -y
 
-RUN pip install -U ansible
-
-# Install Docker
-
-RUN apt-get update && \
-apt-get -y install apt-transport-https \
-     ca-certificates \
-     curl \
-     gnupg2 \
-     software-properties-common && \
-curl -fsSL https://download.docker.com/linux/$(. /etc/os-release; echo "$ID")/gpg > /tmp/dkey; apt-key add /tmp/dkey && \
-add-apt-repository \
-   "deb [arch=amd64] https://download.docker.com/linux/$(. /etc/os-release; echo "$ID") \
-   $(lsb_release -cs) \
-   stable" && \
-apt-get update && \
-apt-get -y install docker-ce
-
-# COmpose
-
-RUN curl -L "https://github.com/docker/compose/releases/download/1.22.0/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose && chmod +x /usr/local/bin/docker-compose
-
-RUN usermod -aG docker jenkins
+# New lines to set up a virtual environment
+####
+ENV ANSIBLE_VENV=/ansible_venv
+RUN mkdir $ANSIBLE_VENV && \
+    chown jenkins:jenkins $ANSIBLE_VENV && \
+    apt-get install python3-venv -y
+####
 
 USER jenkins
 
+# Activate the virtual environment
+RUN python3 -m venv $ANSIBLE_VENV
+
+# Use the venv to install Ansible
+RUN $ANSIBLE_VENV/bin/pip3 install ansible
+
+# Ensure the Ansible binary is accessible
+ENV PATH=$PATH:$ANSIBLE_VENV/bin
+
+##################
+# Install Docker #
+##################
+USER root
+
+# Add Docker's official GPG key:
+RUN apt-get update && apt-get install ca-certificates curl && \
+    install -m 0755 -d /etc/apt/keyrings && \
+    curl -fsSL https://download.docker.com/linux/debian/gpg -o /etc/apt/keyrings/docker.asc && \
+    chmod a+r /etc/apt/keyrings/docker.asc
+
+# Add the repository to Apt sources:
+RUN echo \
+  "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/debian \
+  $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | \
+  tee /etc/apt/sources.list.d/docker.list > /dev/null
+
+RUN apt-get update && apt-get install docker-ce docker-compose-plugin -y
+
+USER jenkins
