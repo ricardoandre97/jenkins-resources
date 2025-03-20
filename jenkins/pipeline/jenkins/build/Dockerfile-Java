@@ -1,4 +1,4 @@
-FROM openjdk:8-jre-alpine
+FROM amazoncorretto:21.0.6
 
 RUN mkdir /app
 
